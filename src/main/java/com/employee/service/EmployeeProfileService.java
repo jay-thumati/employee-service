@@ -1,6 +1,9 @@
 package com.employee.service;
 
+import com.employee.dao.EmployeeProfileRepository;
 import com.employee.dto.EmployeeProfile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,30 +15,21 @@ import java.util.List;
 @Service
 public class EmployeeProfileService {
 
+    @Autowired
+    private EmployeeProfileRepository empProfileRepository;
+
     public List<EmployeeProfile> searchEmployees(Long id, String firstName, String lastName) {
 
         List<EmployeeProfile> employees = new ArrayList<>();
-        EmployeeProfile employee = new EmployeeProfile();
 
-        //Search for all employees
-        if(firstName == null && lastName == null && id == null) {
-            employee.setEmployeeID(1);
-            employee.setFirstName("Jay");
-            employee.setLastName("Thumati");
-            employees.add(employee);
+        EmployeeProfile emp = new EmployeeProfile();
+        emp.setId(id);
+        emp.setFirstName(firstName);
+        emp.setLastName(lastName);
+        Example<EmployeeProfile> example = Example.of(emp);
 
-            employee = new EmployeeProfile();
-            employee.setEmployeeID(2);
-            employee.setFirstName("Naveen");
-            employee.setLastName("Yeluri");
-            employees.add(employee);
-
-            employee = new EmployeeProfile();
-            employee.setEmployeeID(3);
-            employee.setFirstName("Vivek");
-            employee.setLastName("Guddanti");
-            employees.add(employee);
-        }
+        Iterable<EmployeeProfile> iterable = empProfileRepository.findAll(example);
+        iterable.forEach(employees::add);
 
         return employees;
     }
